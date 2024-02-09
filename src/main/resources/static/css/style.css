@@ -1,0 +1,37 @@
+@charset "UTF-8";
+body {
+    margin: 20px;
+    font-size: 14px;
+}
+table {
+    border: solid 1px #84b2e0;
+    border-collapse: collapse;
+}
+th {
+    text-align: center;
+    color: white;
+    background: linear-gradient(#829ebc, #225588);
+    box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.3) inset;
+    padding: 4px 10px;
+}
+td {
+    padding: 4px 10px;
+    border: solid 1px #84b2e0;
+}
+button {
+    width: 90px;
+    margin: 10px 4px;
+    padding: 4px;
+}
+.red {
+    color:red;
+}
+#nav {
+    list-style: none;
+    display: flex;
+    padding: 0px;
+}
+
+#nav li {
+    margin-right: 10px;
+}
