@@ -1,5 +1,6 @@
 package com.example.todolist.controller;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import org.springframework.stereotype.Controller;
@@ -16,16 +17,29 @@ import com.example.todolist.form.TodoData;
 import com.example.todolist.form.TodoQuery;
 import com.example.todolist.repository.TodoRepository;
 import com.example.todolist.service.TodoService;
-import lombok.AllArgsConstructor;
+// import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import com.example.todolist.dao.TodoDaoImpl;
 
 
 
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TodoListController {
     private final TodoRepository todoRepository;
     private final TodoService todoService;
     private final HttpSession session;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+    TodoDaoImpl todoDaoImpl;
+
+    @PostConstruct
+    public void init() {
+        todoDaoImpl = new TodoDaoImpl(entityManager);
+    }
 
     // Todo 一覧表示
     @GetMapping("/todo")
@@ -107,7 +121,9 @@ public class TodoListController {
 
         List<Todo> todoList = null;
         if (todoService.isValid(todoQuery, result)) {
-            todoList = todoService.doQuery(todoQuery);
+            // todoList = todoService.doQuery(todoQuery);
+            // jpql ↓
+            todoList = todoDaoImpl.findByJPQL(todoQuery);
         }
         mv.addObject("todoList", todoList);
         return mv;
