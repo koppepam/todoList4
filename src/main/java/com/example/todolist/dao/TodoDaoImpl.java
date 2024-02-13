@@ -1,5 +1,6 @@
 package com.example.todolist.dao;
 
+import com.example.todolist.entity.Todo_;
 import java.util.ArrayList;
 import java.util.List;
 import com.example.todolist.common.Utils;
@@ -124,7 +125,7 @@ public class TodoDaoImpl implements TodoDao {
         Predicate[] predArray = new Predicate[predicates.size()];
         predicates.toArray(predArray);
         query = query
-            .select(root).where(predArray).orderBy(builder.asc(get(Todo_.id)));
+            .select(root).where(predArray).orderBy(builder.asc(root.get(Todo_.id)));
 
         // 検索
         List<Todo> list = entityManager.createQuery(query).getResultList();
