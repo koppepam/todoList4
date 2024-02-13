@@ -7,6 +7,10 @@ import com.example.todolist.entity.Todo;
 import com.example.todolist.form.TodoQuery;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -66,6 +70,65 @@ public class TodoDaoImpl implements TodoDao {
     // Criteria API
     @Override
     public List<Todo> findByCriteria(TodoQuery todoQuery) {
-        return null;
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Todo> query = builder.createQuery(Todo.class);
+        Root<Todo> root = query.from(Todo.class);
+        List<Predicate> predicates = new ArrayList<>();
+
+        String title = "";
+        if (todoQuery.getTitle().length() > 0) {
+            title = "%" + todoQuery.getTitle() + "%";
+        } else {
+            title = "%";
+        }
+        predicates.add(builder.like(root.get(Todo_.TITLE), title));
+
+        if (todoQuery.getImportance() != -1) {
+            predicates.add(
+                builder.and(
+                    builder.equal(
+                        root.get(Todo_.IMPORTANCE), todoQuery.getImportance())));
+        }
+
+        if (todoQuery.getUrgency() != -1) {
+            predicates.add(
+                builder.and(
+                    builder.equal(
+                        root.get(Todo_.URGENCY), todoQuery.getUrgency())));
+        }
+
+        if (!todoQuery.getDeadlineFrom().equals("")) {
+            predicates.add(
+                builder.and(
+                    builder.greaterThanOrEqualTo(
+                        root.get(Todo_.DEADLINE),
+                        Utils.str2date(todoQuery.getDeadlineFrom()))));
+        }
+
+        if (!todoQuery.getDeadlineTo().equals("")) {
+            predicates.add(
+                builder.and(
+                    builder.lessThanOrEqualTo(
+                        root.get(Todo_.DEADLINE),
+                        Utils.str2date(todoQuery.getDeadlineTo()))));
+        }
+
+        if (todoQuery.getDone() != null&& todoQuery.getDone().equals("Y")) {
+            predicates.add(
+                builder.and(
+                    builder.equal(
+                        root.get(Todo_.DONE), todoQuery.getDone())));
+        }
+
+        // SELECT 作成
+        Predicate[] predArray = new Predicate[predicates.size()];
+        predicates.toArray(predArray);
+        query = query
+            .select(root).where(predArray).orderBy(builder.asc(get(Todo_.id)));
+
+        // 検索
+        List<Todo> list = entityManager.createQuery(query).getResultList();
+
+        return list;
     }
 }

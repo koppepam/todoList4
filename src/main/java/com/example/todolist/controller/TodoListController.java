@@ -123,7 +123,7 @@ public class TodoListController {
         if (todoService.isValid(todoQuery, result)) {
             // todoList = todoService.doQuery(todoQuery);
             // jpql ↓
-            todoList = todoDaoImpl.findByJPQL(todoQuery);
+            todoList = todoDaoImpl.findByCriteria(todoQuery);
         }
         mv.addObject("todoList", todoList);
         return mv;
