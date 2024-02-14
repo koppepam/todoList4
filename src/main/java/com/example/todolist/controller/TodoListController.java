@@ -52,7 +52,7 @@ public class TodoListController {
     }
 
     // Todo 入力フォーム表示
-    @GetMapping("/todo/create")
+    @PostMapping("todo/create/form")
     public ModelAndView createTodo(ModelAndView mv) {
         mv.setViewName("todoForm");
         mv.addObject("todoData", new TodoData());
@@ -61,7 +61,7 @@ public class TodoListController {
     }
 
     // Todo 追加処理
-    @PostMapping("/todo/create")
+    @PostMapping("/todo/create/do")
     public String createTodo(@ModelAttribute @Validated TodoData todoData,
                                    BindingResult result, Model model) {
         // エラーチェック
@@ -122,7 +122,6 @@ public class TodoListController {
         List<Todo> todoList = null;
         if (todoService.isValid(todoQuery, result)) {
             // todoList = todoService.doQuery(todoQuery);
-            // jpql ↓
             todoList = todoDaoImpl.findByCriteria(todoQuery);
         }
         mv.addObject("todoList", todoList);
